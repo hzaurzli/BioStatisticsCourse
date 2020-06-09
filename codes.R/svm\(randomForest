@@ -1,0 +1,61 @@
+data("iris")
+library(e1071)
+
+list = list()
+for (j in 1:5) {
+  list[[j]] = paste('a',j,sep = '_')
+}
+
+for (i in 1:5) {
+  dat = iris[sample(nrow(iris), 20),]
+  df = iris[-as.numeric(row.names(dat)),]
+  model = svm(Species ~.,data = dat)
+  print(model)
+  x = subset(df, select = -Species)
+  y = df$Species
+  pred = predict(model,x)
+  table(pred,y)
+  list[[i]] = roc(Species ~ Sepal.Length, df, plot=TRUE)
+}
+
+
+#roc1 = roc(Species ~ Sepal.Length, df, plot=TRUE)
+#roc2 = roc(Species ~ Petal.Width, df, plot=TRUE)
+plot(list[[1]], col= 1)  
+for(t in 2:4){
+  plot.roc(list[[t]], add=TRUE,col = t)
+}
+
+
+library("pROC")  
+data(aSAH)
+myData = aSAH
+roc1 <- roc(myData$label, myData$score)   
+roc2 <- roc(myData2$label, myData2$score)  
+plot(roc1, col="blue")  
+plot.roc(roc2, add=TRUE, col="red")
+
+
+library(randomForest)
+
+list_f = list()
+for (j in 1:5) {
+  list_f[[j]] = paste('a',j,sep = '_')
+}
+
+for (i in 1:5) {
+  dat = iris[sample(nrow(iris), 20),]
+  df = iris[-as.numeric(row.names(dat)),]
+  model_f = randomForest(Species ~.,data = dat,importance = T)
+  print(model)
+  x = subset(df, select = -Species)
+  y = df$Species
+  pred = predict(model_f,x)
+  table(pred,y)
+  list_f[[i]] = roc(Species ~ Sepal.Length, df, plot=TRUE)
+}
+
+plot(list_f[[1]], col= 1)  
+for(t in 2:4){
+  plot.roc(list_f[[t]], add=TRUE,col = t)
+}
