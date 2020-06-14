@@ -59,3 +59,70 @@ plot(list_f[[1]], col= 1)
 for(t in 2:4){
   plot.roc(list_f[[t]], add=TRUE,col = t)
 }
+
+
+##another way
+###SVM
+pos = read.csv("rzli/pos.csv",header = T)
+neg = read.csv("rzli/neg.csv",header = T)
+iris = rbind(pos,neg)
+iris = iris[,-1]
+
+list = list()
+for (j in 1:5) {
+  list[[j]] = paste('a',j,sep = '_')
+}
+
+for (i in 1:5) {
+  dat = iris[sample(nrow(iris), 3000),]
+  df = iris[-as.numeric(row.names(dat)),]
+  model = svm(class ~ CTA + GAC + GTC + TGG,data = dat)
+  x = subset(df, select = -class)
+  y = df$class
+  pred = predict(model,df)
+  df1 = df[row.names(as.data.frame(pred)),]
+  list[[i]] = roc(df1$class,as.numeric(pred))
+}
+
+######SVM ROC
+dat = iris[sample(nrow(iris), 3000),]
+df = iris[-as.numeric(row.names(dat)),]
+model = svm(class ~ CTA + GAC + GTC + TGG,data = dat)
+pred = predict(model,df)
+p2 = as.factor(pred)
+p2 = as.ordered(p2)
+df1 = df[row.names(as.data.frame(pred)),]
+roc = roc(df1$class,p2)
+plot(roc, col="red"))
+
+
+###randomForest
+library(randomForest)
+
+list_f = list()
+for (j in 1:5) {
+  list_f[[j]] = paste('a',j,sep = '_')
+}
+
+for (i in 1:5) {
+  dat = iris[sample(nrow(iris), 3000),]
+  df = iris[-as.numeric(row.names(dat)),]
+  model_f = randomForest(class ~.,data = dat,importance = T)
+  x = subset(df, select = -class)
+  y = df$class
+  pred_f = predict(model_f,df)
+  df1 = df[row.names(as.data.frame(pred_f)),]
+  list_f[[i]] = roc(df1$class,as.numeric(pred_f))
+}
+
+plot(list_f[[1]], col= 1)  
+for(t in 2:4){
+  plot.roc(list_f[[t]], add=TRUE,col = t)
+}
+
+
+
+
+
+
+
