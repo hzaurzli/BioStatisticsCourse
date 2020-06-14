@@ -67,6 +67,7 @@ pos = read.csv("rzli/pos.csv",header = T)
 neg = read.csv("rzli/neg.csv",header = T)
 iris = rbind(pos,neg)
 iris = iris[,-1]
+iris[is.na(iris)] = 0
 
 list = list()
 for (j in 1:5) {
