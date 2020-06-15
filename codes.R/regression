@@ -1,3 +1,4 @@
+#lasso 1
 library(lars) 
   
 mt = read.csv("/home/ug0007/rzli/new8.csv")
@@ -16,6 +17,7 @@ y = as.matrix(data_train[,10])
 lar1 <-lars(x,y,type = "lasso")
 
 ############
+#lasso 2
 library(glmnet)
 
 pred.total = matrix()
@@ -34,6 +36,7 @@ for (i in 1:10) {
 }
 
 
+#ridge regression
 pred.total = matrix()
 MSE = c()
 for (i in 1:10) {
