@@ -1,0 +1,53 @@
+library(lars) 
+  
+mt = read.csv("/home/ug0007/rzli/new8.csv")
+score = read.csv("/home/ug0007/rzli/score.csv")
+name = read.csv("/home/ug0007/rzli/name.csv")
+data = cbind(name,mt,score)
+data = data[,-2]  
+data[is.na(data)] = 0  
+
+data_train = data[sample(nrow(data), 800),]
+data_test = data[-as.numeric(row.names(data_train)),]
+
+x = as.matrix(data_train[,2:7])
+y = as.matrix(data_train[,10])
+
+lar1 <-lars(x,y,type = "lasso")
+
+############
+library(glmnet)
+
+pred.total = matrix()
+MSE = c()
+for (i in 1:10) {
+  data_train = data[sample(nrow(data), 800),]
+  data_test = data[-as.numeric(row.names(data_train)),]
+  x = as.matrix(data_train[,2:7])
+  y = as.matrix(data_train[,10])
+  Lasso.cv<-cv.glmnet(x,y,alpha = 1)
+  bestlambda<-Lasso.cv$lambda.min
+  Lasso.model<-Lasso.cv$glmnet.fit
+  pred.Lasso<-predict(Lasso.model,newx=as.matrix(data_test[,2:7]),s=bestlambda)
+  pred.total<-c(pred.total,pred.Lasso)
+  MSE[i] = mean((pred.Lasso-data_test[,10])^2)
+}
+
+
+pred.total = matrix()
+MSE = c()
+for (i in 1:10) {
+  data_train = data[sample(nrow(data), 800),]
+  data_test = data[-as.numeric(row.names(data_train)),]
+  x = as.matrix(data_train[,2:7])
+  y = as.matrix(data_train[,10])
+  Lasso.cv<-cv.glmnet(x,y,alpha = 0)
+  bestlambda<-Lasso.cv$lambda.min
+  Lasso.model<-Lasso.cv$glmnet.fit
+  pred.Lasso<-predict(Lasso.model,newx=as.matrix(data_test[,2:7]),s=bestlambda)
+  pred.total<-c(pred.total,pred.Lasso)
+  MSE[i] = mean((pred.Lasso-data_test[,10])^2)
+}
+
+#MSE
+mean((pred.Lasso-data_test[,10])^2)
