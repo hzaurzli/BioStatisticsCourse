@@ -22,35 +22,47 @@ library(glmnet)
 
 pred.total = matrix()
 MSE = c()
+R2 = c()
 for (i in 1:10) {
   data_train = data[sample(nrow(data), 800),]
   data_test = data[-as.numeric(row.names(data_train)),]
-  x = as.matrix(data_train[,2:7])
+  x = as.matrix(data_train[,2:5])
   y = as.matrix(data_train[,10])
-  Lasso.cv<-cv.glmnet(x,y,alpha = 1)
+  Lasso.cv<-cv.glmnet(x,y,alpha = 1) ##### 1 for lasso
   bestlambda<-Lasso.cv$lambda.min
   Lasso.model<-Lasso.cv$glmnet.fit
-  pred.Lasso<-predict(Lasso.model,newx=as.matrix(data_test[,2:7]),s=bestlambda)
+  pred.Lasso<-predict(Lasso.model,newx=as.matrix(data_test[,2:5]),s=bestlambda)
   pred.total<-c(pred.total,pred.Lasso)
   MSE[i] = mean((pred.Lasso-data_test[,10])^2)
+  sse = sum((data_test[,10]-pred.Lasso)^2)
+  sst = sum((data_test[,10]-mean(data_test[,10]))^2)
+  R2[i] = (1 - sse/sst)^2
 }
 
 
-#ridge regression
 pred.total = matrix()
 MSE = c()
+R2 = c()
 for (i in 1:10) {
   data_train = data[sample(nrow(data), 800),]
   data_test = data[-as.numeric(row.names(data_train)),]
   x = as.matrix(data_train[,2:7])
   y = as.matrix(data_train[,10])
-  Lasso.cv<-cv.glmnet(x,y,alpha = 0)
+  Lasso.cv<-cv.glmnet(x,y,alpha = 0) ##### 0 for ridge regression
   bestlambda<-Lasso.cv$lambda.min
   Lasso.model<-Lasso.cv$glmnet.fit
   pred.Lasso<-predict(Lasso.model,newx=as.matrix(data_test[,2:7]),s=bestlambda)
   pred.total<-c(pred.total,pred.Lasso)
   MSE[i] = mean((pred.Lasso-data_test[,10])^2)
+  sse = sum((data_test[,10]-pred.Lasso)^2)
+  sst = sum((data_test[,10]-mean(data_test[,10]))^2)
+  R2[i] = (1 - sse/sst)^2
 }
 
 #MSE
 mean((pred.Lasso-data_test[,10])^2)
+
+#R2
+sse = sum((data_test[,10]-pred.Lasso)^2)
+sst = sum((data_test[,10]-mean(data_test[,10]))^2)
+R2[i] = (1 - sse/sst)^2
