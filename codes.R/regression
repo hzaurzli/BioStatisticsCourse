@@ -66,3 +66,7 @@ mean((pred.Lasso-data_test[,10])^2)
 sse = sum((data_test[,10]-pred.Lasso)^2)
 sst = sum((data_test[,10]-mean(data_test[,10]))^2)
 R2[i] = (1 - sse/sst)^2
+
+#Histogram for z-score
+p<-ggplot(data, aes(x=data$Experimental.Z.score)) +
+  geom_histogram()
