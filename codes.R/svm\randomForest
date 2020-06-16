@@ -122,7 +122,14 @@ for(t in 2:4){
 }
 
 
+#calculate AUC
+o = vector()
+for (i in 1:10) {
+ o[i] = list_f[[i]]$auc[1]
+}
 
+mean(o)
+sqrt(var(o))
 
 
 
